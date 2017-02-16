@@ -1,4 +1,4 @@
-# sentence
+# lorem
 This is simple service module. Only for showing the micro service with HTTP and return json.
 The purpose for this service is only generating lorem ipsum paragraph and return the payload.
 
@@ -20,7 +20,7 @@ Endpoint will be created here
 ### transport.go
 Handling about encode and decode json
 
-#### sentence.d
+#### lorem.d
 Go main function will be located under this folder. The `dot d` means daemon.
 
 ### execute
