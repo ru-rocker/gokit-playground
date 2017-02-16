@@ -26,4 +26,4 @@ Go main function will be located under this folder. The `dot d` means daemon.
 ### execute
 
     cd $GOPATH
-    go run src/github.com/ru-rocker/gokit-playground/player/player.d/main.go
+    go run src/github.com/ru-rocker/gokit-playground/lorem/lorem.d/main.go
