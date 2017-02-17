@@ -24,10 +24,12 @@ type LoremResponse struct {
 	Err     error `json:"err,omitempty"`
 }
 
+// endpoints wrapper
 type Endpoints struct {
 	LoremEndpoint endpoint.Endpoint
 }
 
+// creating Lorem Ipsum Endpoint
 func MakeLoremEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(LoremRequest)

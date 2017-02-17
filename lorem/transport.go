@@ -17,6 +17,7 @@ var (
 	ErrBadRouting = errors.New("inconsistent mapping between route and handler (programmer error)")
 )
 
+// Make Http Handler
 func MakeHttpHandler(ctx context.Context, endpoint Endpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	options := []httptransport.ServerOption{
@@ -66,16 +67,13 @@ func decodeLoremRequest(_ context.Context, r *http.Request) (interface{}, error)
 
 // errorer is implemented by all concrete response types that may contain
 // errors. It allows us to change the HTTP response code without needing to
-// trigger an endpoint (transport-level) error. For more information, read the
-// big comment in endpoints.go.
+// trigger an endpoint (transport-level) error.
 type errorer interface {
 	error() error
 }
 
 // encodeResponse is the common method to encode all response types to the
-// client. I chose to do it this way because, since we're using JSON, there's no
-// reason to provide anything more specific. It's certainly possible to
-// specialize on a per-response (per-method) basis.
+// client.
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
 	if e, ok := response.(errorer); ok && e.error() != nil {
 		// Not a Go kit transport error, but a business-logic error.
@@ -87,6 +85,7 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 	return json.NewEncoder(w).Encode(response)
 }
 
+// encode error
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 	if err == nil {
 		panic("encodeError with nil error")
