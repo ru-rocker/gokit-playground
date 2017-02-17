@@ -6,7 +6,7 @@ I am fully using all three functions from the golorem library.
 
 ## Required libraries
 
-    go get githum.com/go-kit/kit
+    go get github.com/go-kit/kit
     go get github.com/drhodes/golorem
     go get github.com/gorilla/mux
 
