@@ -4,7 +4,25 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"context"
 	"strings"
+	"errors"
 )
+
+var (
+	ErrRequestTypeNotFound = errors.New("Request type only valid for word, sentence and paragraph")
+)
+
+//request
+type LoremRequest struct {
+	RequestType string
+	Min int
+	Max int
+}
+
+//response
+type LoremResponse struct {
+	Message string `json:"message"`
+	Err     error `json:"err,omitempty"`
+}
 
 type Endpoints struct {
 	LoremEndpoint endpoint.Endpoint

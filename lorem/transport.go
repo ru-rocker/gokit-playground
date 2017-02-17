@@ -14,23 +14,8 @@ import (
 
 var (
 	// ErrBadRouting is returned when an expected path variable is missing.
-	// It always indicates programmer error.
 	ErrBadRouting = errors.New("inconsistent mapping between route and handler (programmer error)")
-	ErrRequestTypeNotFound = errors.New("Request type only valid for word, sentence and paragraph")
 )
-
-//request
-type LoremRequest struct {
-	RequestType string
-	Min int
-	Max int
-}
-
-//response
-type LoremResponse struct {
-	Message string `json:"message"`
-	Err     error `json:"err,omitempty"`
-}
 
 func MakeHttpHandler(ctx context.Context, endpoint Endpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
