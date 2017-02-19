@@ -14,6 +14,7 @@ I am fully using all three functions from the golorem library.
 Protocol buffer module. The place to create proto files.
 Download protoc from [here](https://github.com/google/protobuf/releases)
 Then execute `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
+
 *Note: don't forget to add GOBIN on your PATH*
 
 ### service.go
