@@ -1,0 +1,19 @@
+syntax = "proto3";
+package pb;
+
+service Lorem {
+    rpc Word(LoremRequest) returns (LoremResponse) {}
+    rpc Sentence(LoremRequest) returns (LoremResponse) {}
+    rpc Paragraph(LoremRequest) returns (LoremResponse) {}
+}
+
+message LoremRequest {
+    string requestType = 1;
+    int32 min = 2;
+    int32 max = 3;
+}
+
+message LoremResponse {
+    string message = 1;
+    string err = 2;
+}
