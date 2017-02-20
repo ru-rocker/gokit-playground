@@ -17,6 +17,9 @@ Then execute `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`
 
 *Note: don't forget to add GOBIN on your PATH*
 
+To generate protobuf file into go file:
+`protoc lorem.proto --go_out=plugins=grpc:.`
+
 ### service.go
 Business logic will be put here
 
