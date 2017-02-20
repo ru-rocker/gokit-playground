@@ -1,27 +1,23 @@
-package lorem
+package lorem_grpc
 
 import (
 	"github.com/go-kit/kit/endpoint"
 	"context"
-	"strings"
 	"errors"
 )
 
-var (
-	ErrRequestTypeNotFound = errors.New("Request type only valid for word, sentence and paragraph")
-)
 
 //request
 type LoremRequest struct {
 	RequestType string
-	Min int
-	Max int
+	Min         int32
+	Max         int32
 }
 
 //response
 type LoremResponse struct {
 	Message string `json:"message"`
-	Err     error `json:"err,omitempty"`
+	Err     string `json:"err,omitempty"`
 }
 
 // endpoints wrapper
@@ -35,24 +31,36 @@ func MakeLoremEndpoint(svc Service) endpoint.Endpoint {
 		req := request.(LoremRequest)
 
 		var (
-			txt string
 			min, max int
 		)
 
-		min = req.Min
-		max = req.Max
+		min = int(req.Min)
+		max = int(req.Max)
+		txt, err := svc.Lorem(ctx, req.RequestType, min, max)
 
-		if strings.EqualFold(req.RequestType, "Word") {
-			txt = svc.Word(min, max)
-		} else if strings.EqualFold(req.RequestType, "Sentence"){
-			txt = svc.Sentence(min, max)
-		} else if strings.EqualFold(req.RequestType, "Paragraph") {
-			txt = svc.Paragraph(min, max)
-		} else {
-			return nil, ErrRequestTypeNotFound
+		if err != nil {
+			return nil, err
 		}
 
 		return LoremResponse{Message: txt}, nil
 	}
 
+}
+
+// make Endpoints as a Service implementation
+func (e Endpoints) Lorem(ctx context.Context, requestType string, min, max int) (string, error) {
+	req := LoremRequest{
+		RequestType: requestType,
+		Min: int32(min),
+		Max: int32(max),
+	}
+	resp, err := e.LoremEndpoint(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	loremResp := resp.(LoremResponse)
+	if loremResp.Err != "" {
+		return "", errors.New(loremResp.Err)
+	}
+	return loremResp.Message, nil
 }

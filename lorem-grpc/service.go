@@ -1,19 +1,20 @@
-package lorem
+package lorem_grpc
 
 import (
-	golorem "github.com/drhodes/golorem"
+	gl "github.com/drhodes/golorem"
+	"strings"
+	"errors"
+	"context"
+)
+
+var (
+	ErrRequestTypeNotFound = errors.New("Request type only valid for word, sentence and paragraph")
 )
 
 // Define service interface
 type Service interface {
 	// generate a word with at least min letters and at most max letters.
-	Word(min, max int) string
-
-	// generate a sentence with at least min words and at most max words.
-	Sentence(min, max int) string
-
-	// generate a paragraph with at least min sentences and at most max sentences.
-	Paragraph(min, max int) string
+	Lorem(ctx context.Context, requestType string, min, max int) (string, error)
 }
 
 // Implement service with empty struct
@@ -22,14 +23,17 @@ type LoremService struct {
 }
 
 // Implement service functions
-func (LoremService) Word(min, max int) string {
-	return golorem.Word(min, max)
-}
-
-func (LoremService) Sentence(min, max int) string {
-	return golorem.Sentence(min, max)
-}
-
-func (LoremService) Paragraph(min, max int) string {
-	return golorem.Paragraph(min, max)
+func (LoremService) Lorem(_ context.Context, requestType string, min, max int) (string, error) {
+	var result string
+	var err error
+	if strings.EqualFold(requestType, "Word") {
+		result = gl.Word(min, max)
+	} else if strings.EqualFold(requestType, "Sentence") {
+		result = gl.Sentence(min, max)
+	} else if strings.EqualFold(requestType, "Paragraph") {
+		result = gl.Paragraph(min, max)
+	} else {
+		err = ErrRequestTypeNotFound
+	}
+	return result, err
 }

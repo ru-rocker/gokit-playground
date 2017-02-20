@@ -30,4 +30,11 @@ Endpoint will be created here
 Handling about encode and decode json
 
 ### execute
-TODO
+
+    cd $GOPATH
+
+    #Running grpc server
+    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/server/main.go
+
+    #Running client
+    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/client/cmd/main.go lorem sentence 10 20
