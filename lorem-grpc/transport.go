@@ -19,6 +19,7 @@ func (s *grpcServer) Lorem(ctx context.Context, r *pb.LoremRequest) (*pb.LoremRe
 	return resp.(*pb.LoremResponse), nil
 }
 
+// create new grpc server
 func NewGRPCServer(ctx context.Context, endpoint Endpoints) pb.LoremServer {
 	return &grpcServer{
 		lorem: grpctransport.NewServer(

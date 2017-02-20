@@ -47,7 +47,8 @@ func MakeLoremEndpoint(svc Service) endpoint.Endpoint {
 
 }
 
-// make Endpoints as a Service implementation
+// Wrapping Endpoints as a Service implementation.
+// Will be used in gRPC client
 func (e Endpoints) Lorem(ctx context.Context, requestType string, min, max int) (string, error) {
 	req := LoremRequest{
 		RequestType: requestType,

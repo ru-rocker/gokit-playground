@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Return new lorem_grpc service
 func New(conn *grpc.ClientConn) lorem_grpc.Service {
 	var loremEndpoint = grpctransport.NewClient(
 		conn, "Lorem", "Lorem",
