@@ -34,7 +34,7 @@ Handling about encode and decode json
     cd $GOPATH
 
     #Running grpc server
-    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/server/main.go
+    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/server/server_grpc_main.go
 
     #Running client
-    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/client/cmd/main.go lorem sentence 10 20
+    go run src/github.com/ru-rocker/gokit-playground/lorem-grpc/client/cmd/client_grpc_main.go lorem sentence 10 20
