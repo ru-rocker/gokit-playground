@@ -26,8 +26,11 @@ Business logic will be put here
 ### endpoint.go
 Endpoint will be created here
 
+### model.go
+Encode and Decode json
+
 ### transport.go
-Handling about encode and decode json
+Implement interface from protocol buffer
 
 ### execute
 
