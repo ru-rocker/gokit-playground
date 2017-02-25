@@ -3,13 +3,14 @@ package lorem
 import (
 	"net/http"
 	"errors"
-	"context"
+
 
 	"github.com/gorilla/mux"
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"encoding/json"
 	"strconv"
+	"golang.org/x/net/context"
 )
 
 var (

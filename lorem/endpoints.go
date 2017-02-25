@@ -2,9 +2,9 @@ package lorem
 
 import (
 	"github.com/go-kit/kit/endpoint"
-	"context"
 	"strings"
 	"errors"
+	"golang.org/x/net/context"
 )
 
 var (

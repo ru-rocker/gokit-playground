@@ -4,7 +4,7 @@ import (
 	gl "github.com/drhodes/golorem"
 	"strings"
 	"errors"
-	"context"
+	"golang.org/x/net/context"
 )
 
 var (

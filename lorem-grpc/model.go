@@ -1,8 +1,8 @@
 package lorem_grpc
 
 import (
-	"context"
 	"github.com/ru-rocker/gokit-playground/lorem-grpc/pb"
+	"golang.org/x/net/context"
 )
 
 //Encode and Decode Lorem Request
@@ -15,7 +15,7 @@ func EncodeGRPCLoremRequest(_ context.Context, r interface{}) (interface{}, erro
 	} , nil
 }
 
-func DecodeGRPCLoremRequest(ctx context.Context, r interface{}) (interface{}, error) {
+func DecodeGRPCLoremRequest(_ context.Context, r interface{}) (interface{}, error) {
 	req := r.(*pb.LoremRequest)
 	return LoremRequest{
 		RequestType: req.RequestType,
