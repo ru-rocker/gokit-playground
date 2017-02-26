@@ -1,4 +1,4 @@
-# lorem
+# lorem-logging
 This is simple service module. Only for showing the micro service with HTTP and return json.
 The purpose for this service is only generating lorem ipsum paragraph and return the payload.
 
