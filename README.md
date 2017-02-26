@@ -6,3 +6,6 @@ See `lorem` module
 
 ## gRPC protocol:
 See `lorem-grpc` module
+
+## Application Logging
+See `lorem-logging` module
