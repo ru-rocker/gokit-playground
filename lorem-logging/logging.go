@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-// create type that return function.
-// this will be needed in main.go
-type ServiceMiddleware func(Service) Service
-
 // implement function to return ServiceMiddleware
 func LoggingMiddleware(logger log.Logger) ServiceMiddleware {
 	return func(next Service) Service {

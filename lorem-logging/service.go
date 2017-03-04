@@ -21,6 +21,10 @@ type LoremService struct {
 
 }
 
+// create type that return function.
+// this will be needed in main.go
+type ServiceMiddleware func(Service) Service
+
 // Implement service functions
 func (LoremService) Word(min, max int) string {
 	return golorem.Word(min, max)
