@@ -15,12 +15,19 @@ func main() {
 	ctx := context.Background()
 	errChan := make(chan error)
 
+	logfile, err := os.OpenFile("./golorem.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer logfile.Close()
+
 	// Logging domain.
 	var logger log.Logger
 	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
-		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+		w := log.NewSyncWriter(logfile)
+		logger = log.NewLogfmtLogger(w)
+		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
+		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
 	var svc lorem_logging.Service

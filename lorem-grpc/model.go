@@ -2,7 +2,7 @@ package lorem_grpc
 
 import (
 	"github.com/ru-rocker/gokit-playground/lorem-grpc/pb"
-	"golang.org/x/net/context"
+	"context"
 )
 
 //Encode and Decode Lorem Request

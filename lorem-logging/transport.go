@@ -10,7 +10,8 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"encoding/json"
 	"strconv"
-	"golang.org/x/net/context"
+	//"golang.org/x/net/context"
+	"context"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 )
 
 // Make Http Handler
-func MakeHttpHandler(ctx context.Context, endpoint Endpoints, logger log.Logger) http.Handler {
+func MakeHttpHandler(_ context.Context, endpoint Endpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter()
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorLogger(logger),
@@ -28,7 +29,6 @@ func MakeHttpHandler(ctx context.Context, endpoint Endpoints, logger log.Logger)
 
 	//POST /lorem/{type}/{min}/{max}
 	r.Methods("POST").Path("/lorem/{type}/{min}/{max}").Handler(httptransport.NewServer(
-		ctx,
 		endpoint.LoremEndpoint,
 		decodeLoremRequest,
 		encodeResponse,

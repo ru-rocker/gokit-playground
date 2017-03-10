@@ -3,7 +3,7 @@ package lorem_grpc
 import (
 	"github.com/go-kit/kit/endpoint"
 	"errors"
-	"golang.org/x/net/context"
+	"context"
 )
 
 

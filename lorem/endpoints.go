@@ -4,7 +4,7 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"strings"
 	"errors"
-	"golang.org/x/net/context"
+	"context"
 )
 
 var (
