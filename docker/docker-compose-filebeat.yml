@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  filebeat:
+    image: fiunchinho/docker-filebeat
+    environment:
+      LOGSTASH_HOST: db:3306
+      LOGSTASH_PORT: wordpress
+      INDEX: logstash
+    volumes:
+      - $PWD/lorem-logging/filebeat/filebeat.yml:/filebeat.yml
+      - $PWD/log/lorem/golorem.log:/golorem.log

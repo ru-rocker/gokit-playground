@@ -15,7 +15,7 @@ func main() {
 	ctx := context.Background()
 	errChan := make(chan error)
 
-	logfile, err := os.OpenFile("./log/lorem/golorem.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	logfile, err := os.OpenFile("./gokit-playground/log/lorem/golorem.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}

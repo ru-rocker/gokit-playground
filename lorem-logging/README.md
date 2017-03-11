@@ -31,10 +31,11 @@ Go main function will be located under this folder. The `dot d` means daemon.
     cd $GOPATH
     go run src/github.com/ru-rocker/gokit-playground/lorem/lorem.d/main.go
 
-### Running Docker Command
-docker run -v "/Users/ru-rocker/Documents/workspace-golang/src/github.com/ru-rocker/gokit-playground/lorem-logging/filebeat/filebeat.yml:/filebeat.yml" \
-           -v "/Users/ru-rocker/golorem.log:/golorem.log" \
-           -e "LOGSTASH_HOST=172.20.20.10" \
-           -e "LOGSTASH_PORT=5044" \
-           -e "INDEX=logstash" \
-           fiunchinho/docker-filebeat
+### Running Filebeat
+The filebeat is using docker-compose.
+To execute type
+
+    cd $GOPATH/src/github.com/ru-rocker/gokit-playground
+    docker-compose -f docker/docker-compose-filebeat.yml up
+    
+*Notes: the log file is located under `$GOPATH/src/github.com/ru-rocker/gokit-playground/log/lorem/golorem.log`*
