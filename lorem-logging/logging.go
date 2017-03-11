@@ -23,7 +23,7 @@ type loggingMiddleware struct {
 func (mw loggingMiddleware) Word(min, max int) (output string) {
 	defer func(begin time.Time){
 		mw.logger.Log(
-			"method","Word",
+			"function","Word",
 			"min", min,
 			"max", max,
 			"result", output,
@@ -37,7 +37,7 @@ func (mw loggingMiddleware) Word(min, max int) (output string) {
 func (mw loggingMiddleware) Sentence(min, max int) (output string) {
 	defer func(begin time.Time){
 		mw.logger.Log(
-			"method","Sentence",
+			"function","Sentence",
 			"min", min,
 			"max", max,
 			"result", output,
@@ -51,7 +51,7 @@ func (mw loggingMiddleware) Sentence(min, max int) (output string) {
 func (mw loggingMiddleware) Paragraph(min, max int) (output string) {
 	defer func(begin time.Time){
 		mw.logger.Log(
-			"method","Paragraph",
+			"function","Paragraph",
 			"min", min,
 			"max", max,
 			"result", output,
