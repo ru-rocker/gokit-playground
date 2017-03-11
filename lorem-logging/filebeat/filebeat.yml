@@ -4,7 +4,7 @@ filebeat:
       paths:
         - "/golorem.log"
       input_type: log
-      document_type: syslog
+      document_type: gokitlog
 
 output:
   logstash:
