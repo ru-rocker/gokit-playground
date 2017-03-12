@@ -28,8 +28,8 @@ Go main function will be located under this folder. The `dot d` means daemon.
 
 ### execute
 
-    cd $GOPATH
-    go run src/github.com/ru-rocker/gokit-playground/lorem-logging/lorem-logging.d/main.go
+    cd $GOPATH/src/github.com/ru-rocker/gokit-playground
+    go run lorem-logging/lorem-logging.d/main.go
 
 ### Running Filebeat
 The filebeat is using docker-compose.
