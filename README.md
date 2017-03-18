@@ -1,6 +1,9 @@
 # gokit-playground
 Repository for gokit tutorial
 
+# Docker Compose
+The docker compose configurations are located under `docker` folder
+
 ## Simple REST service:
 See `lorem` module
 
