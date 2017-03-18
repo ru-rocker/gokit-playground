@@ -9,3 +9,6 @@ See `lorem-grpc` module
 
 ## Application Logging
 See `lorem-logging` module
+
+## Rate Limiter
+See `lorem-rate-limit` module
