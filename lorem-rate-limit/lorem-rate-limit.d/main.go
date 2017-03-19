@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/go-kit/kit/log"
+	//ratelimitkit "github.com/go-kit/kit/ratelimit"
 	"github.com/ru-rocker/gokit-playground/lorem-rate-limit"
 	"time"
 	"github.com/juju/ratelimit"
@@ -32,6 +33,7 @@ func main() {
 	rlbucket := ratelimit.NewBucket(1*time.Second, 5)
 	e := lorem_rate_limit.MakeLoremLoggingEndpoint(svc)
 	e = lorem_rate_limit.NewTokenBucketLimiter(rlbucket)(e)
+	//e = ratelimitkit.NewTokenBucketThrottler(rlbucket, time.Sleep)(e)
 	endpoint := lorem_rate_limit.Endpoints{
 		LoremEndpoint: e,
 	}
