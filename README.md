@@ -15,3 +15,6 @@ See `lorem-logging` module
 
 ## Rate Limiter
 See `lorem-rate-limit` module
+
+## Metrics
+See `lorem-metrics` module
