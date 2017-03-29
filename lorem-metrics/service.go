@@ -1,4 +1,4 @@
-package lorem_rate_limit
+package lorem_metrics
 
 import (
 	golorem "github.com/drhodes/golorem"

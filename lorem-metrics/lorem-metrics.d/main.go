@@ -10,6 +10,8 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/ru-rocker/gokit-playground/lorem-metrics"
 	ratelimitkit "github.com/go-kit/kit/ratelimit"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"time"
 	"github.com/juju/ratelimit"
 )
@@ -26,19 +28,34 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	var svc lorem_rate_limit.Service
-	svc = lorem_rate_limit.LoremService{}
-	svc = lorem_rate_limit.LoggingMiddleware(logger)(svc)
+	//declare metrics
+	fieldKeys := []string{"method"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "ru_rocker",
+		Subsystem: "lorem_service",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "ru_rocker",
+		Subsystem: "lorem_service",
+		Name:      "request_latency_microseconds",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+
+	var svc lorem_metrics.Service
+	svc = lorem_metrics.LoremService{}
+	svc = lorem_metrics.LoggingMiddleware(logger)(svc)
+	svc = lorem_metrics.Metrics(requestCount, requestLatency)(svc)
 
 	rlbucket := ratelimit.NewBucket(1*time.Second, 5)
-	e := lorem_rate_limit.MakeLoremLoggingEndpoint(svc)
-	//e = lorem_rate_limit.NewTokenBucketLimiter(rlbucket)(e)
+	e := lorem_metrics.MakeLoremLoggingEndpoint(svc)
 	e = ratelimitkit.NewTokenBucketThrottler(rlbucket, time.Sleep)(e)
-	endpoint := lorem_rate_limit.Endpoints{
+	endpoint := lorem_metrics.Endpoints{
 		LoremEndpoint: e,
 	}
 
-	r := lorem_rate_limit.MakeHttpHandler(ctx, endpoint, logger)
+	r := lorem_metrics.MakeHttpHandler(ctx, endpoint, logger)
 
 	// HTTP transport
 	go func() {

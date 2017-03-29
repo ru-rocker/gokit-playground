@@ -1,4 +1,4 @@
-package lorem_rate_limit
+package lorem_metrics
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"encoding/json"
 	"strconv"
-	//"golang.org/x/net/context"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"context"
 )
 
@@ -34,6 +34,8 @@ func MakeHttpHandler(_ context.Context, endpoint Endpoints, logger log.Logger) h
 		encodeResponse,
 		options...,
 	))
+
+	r.Path("/metrics").Handler(stdprometheus.Handler())
 
 	return r
 

@@ -1,11 +1,10 @@
-package lorem_rate_limit
+package lorem_metrics
 
 import (
 	"github.com/go-kit/kit/endpoint"
 	"strings"
 	"errors"
 	"context"
-	//"golang.org/x/net/context"
 )
 
 var (
