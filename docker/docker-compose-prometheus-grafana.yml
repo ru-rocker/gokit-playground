@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - $PWD/lorem-rate-limit/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    volumes:
+      - $PWD/extra/grafana_db:/var/lib/grafana grafana/grafana
