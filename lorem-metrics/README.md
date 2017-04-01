@@ -37,13 +37,13 @@ Go main function will be located under this folder. The `dot d` means daemon.
 ### execute
 
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
-    go run lorem-logging/lorem-logging.d/main.go
+    go run lorem-metrics/lorem-metrics.d/main.go
 
-### Running Filebeat
+### Running Prometheus and Grafana
 The filebeat is using docker-compose.
 To execute type
 
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
-    docker-compose -f docker/docker-compose-filebeat.yml up
+    docker-compose -f docker/docker-compose-prometheus-grafana.yml up -d
     
 *Notes: the log file is located under `$GOPATH/src/github.com/ru-rocker/gokit-playground/log/lorem/golorem.log`*
