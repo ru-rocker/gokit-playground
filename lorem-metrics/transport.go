@@ -10,7 +10,7 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"encoding/json"
 	"strconv"
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus/promhttp"
 	"context"
 )
 
@@ -35,6 +35,7 @@ func MakeHttpHandler(_ context.Context, endpoint Endpoints, logger log.Logger) h
 		options...,
 	))
 
+	// GET /metrics
 	r.Path("/metrics").Handler(stdprometheus.Handler())
 
 	return r

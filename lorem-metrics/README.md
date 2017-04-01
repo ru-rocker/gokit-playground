@@ -13,7 +13,6 @@ I am fully using all three functions from the golorem library.
     go get github.com/gorilla/mux
     go get github.com/juju/ratelimit
     go get github.com/prometheus/client_golang/prometheus
-    go get github.com/go-kit/kit/metrics
 
 ### service.go
 Business logic will be put here
@@ -40,7 +39,6 @@ Go main function will be located under this folder. The `dot d` means daemon.
     go run lorem-metrics/lorem-metrics.d/main.go
 
 ### Running Prometheus and Grafana
-The filebeat is using docker-compose.
 To execute type
 
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
