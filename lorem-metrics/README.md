@@ -46,4 +46,3 @@ To execute type
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
     docker-compose -f docker/docker-compose-prometheus-grafana.yml up -d
     
-*Notes: the log file is located under `$GOPATH/src/github.com/ru-rocker/gokit-playground/log/lorem/golorem.log`*
