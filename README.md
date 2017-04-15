@@ -18,3 +18,6 @@ See `lorem-rate-limit` module
 
 ## Metrics
 See `lorem-metrics` module
+
+### Service Discovery
+See `lorem-consul` module

@@ -1,8 +1,8 @@
-# lorem-metrics
+# lorem-consul
 This is simple service module. Only for showing the micro service with HTTP and return json.
 The purpose for this service is only generating lorem ipsum paragraph and return the payload.
 
-In this part I will demonstrate how to show your service metrics. I copied from `lorem-rate-limit`
+In this part I will demonstrate how to discover service by using consul. I copied from `lorem-metrics`
 
 I am fully using all three functions from the golorem library.
 
@@ -13,6 +13,7 @@ I am fully using all three functions from the golorem library.
     go get github.com/gorilla/mux
     go get github.com/juju/ratelimit
     go get github.com/prometheus/client_golang/prometheus
+    go get github.com/go-kit/kit/sd/consul
 
 ### service.go
 Business logic will be put here
@@ -30,13 +31,24 @@ Logging function is under this file
 Middleware function. 
 For this sample, this function for rate limiting and metrics.
 
-#### lorem-metrics.d
-Go main function will be located under this folder. The `dot d` means daemon.
+### discovery.go
+Consul service registration utility
+
+#### lorem-consul.d
+Go main function to build service and register to consul 
+
+#### discover.d
+Go main function for discover service
+
+### Running Consul
+
+    docker run --rm -p 8400:8400 -p 8500:8500 -p 8600:53/udp -h node1 progrium/consul -server -bootstrap -ui-dir /ui -advertise 192.168.1.103
 
 ### execute
 
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
-    go run lorem-metrics/lorem-metrics.d/main.go
+    go run lorem-consul/lorem-consul.d/main.go -consul.addr localhost -consul.port 8500 -advertise.addr 192.168.1.103 -advertise.port 7002
+    go run lorem-consul/discover.d/main.go -consul.addr localhost -consul.port 8500
 
 ### Running Prometheus and Grafana
 To execute type
