@@ -54,5 +54,5 @@ Go main function for discover service
 To execute type
 
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
-    docker-compose -f docker/docker-compose-prometheus-grafana.yml up -d
+    docker-compose -f docker/docker-compose-prometheus-grafana-consul.yml up -d
     

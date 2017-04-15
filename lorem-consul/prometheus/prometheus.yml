@@ -21,8 +21,15 @@ scrape_configs:
           group: 'local'
 
   - job_name: 'ru-rocker'
+
     scrape_interval: 5s
-    static_configs:
-      - targets: ['192.168.1.103:8080']
-        labels:
-          group: 'lorem'
+
+    consul_sd_configs:
+      - server: '192.168.1.103:8500'
+
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*,lorem,.*
+        action: keep
+      - source_labels: [__meta_consul_service]
+        target_label: job
