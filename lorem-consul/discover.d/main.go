@@ -73,6 +73,9 @@ func main() {
 	balancer := lb.NewRoundRobin(subscriber)
 	retry := lb.Retry(1, duration, balancer)
 	loremEndpoint = retry
+
+	// POST /sd-lorem
+	// Payload: {"requestType":"word", "min":10, "max":10}
 	r.Methods("POST").Path("/sd-lorem").Handler(ht.NewServer(
 		loremEndpoint,
 		decodeConsulLoremRequest,

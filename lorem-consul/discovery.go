@@ -48,9 +48,9 @@ func Register(consulAddress string,
 	}
 
 	port, _ := strconv.Atoi(advertisePort)
-	num := rand.Intn(100)
+	num := rand.Intn(100) // to make service ID unique
 	asr := api.AgentServiceRegistration{
-		ID:      "lorem" + strconv.Itoa(num),
+		ID:      "lorem" + strconv.Itoa(num), //unique service ID
 		Name:    "lorem",
 		Address: advertiseAddress,
 		Port:    port,
