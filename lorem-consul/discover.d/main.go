@@ -100,6 +100,7 @@ func main() {
 	logger.Log("exit", <-errc)
 }
 
+// factory function to parse URL from Consul to Endpoint
 func loremFactory(_ context.Context, method, path string) sd.Factory {
 	return func(instance string) (endpoint.Endpoint, io.Closer, error) {
 		if !strings.HasPrefix(instance, "http") {
@@ -123,6 +124,7 @@ func loremFactory(_ context.Context, method, path string) sd.Factory {
 }
 
 // decode request from discovery service
+// parsing JSON into LoremRequest
 func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request lorem_consul.LoremRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -131,7 +133,8 @@ func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, 
 	return request, nil
 }
 
-// Encode request
+// Encode request form LoremRequest into existing Lorem Service
+// The encode will translate the LoremRequest into /lorem/{requestType}/{min}/{max}
 func encodeLoremRequest(_ context.Context, req *http.Request, request interface{}) error {
 	lr := request.(lorem_consul.LoremRequest)
 	p := "/" + lr.RequestType + "/" + strconv.Itoa(lr.Min) + "/" + strconv.Itoa(lr.Max)
@@ -139,7 +142,7 @@ func encodeLoremRequest(_ context.Context, req *http.Request, request interface{
 	return nil
 }
 
-// decode response from our end point
+// decode response from Lorem Service
 func decodeLoremResponse(_ context.Context, resp *http.Response) (interface{}, error) {
 	var response lorem_consul.LoremResponse
 	var s map[string]interface{}
