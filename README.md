@@ -21,3 +21,6 @@ See `lorem-metrics` module
 
 ## Service Discovery: Consul
 See `lorem-consul` module
+
+## Circuit Breaker Pattern
+See `lorem-hystrix` module
