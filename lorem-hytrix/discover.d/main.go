@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"errors"
 	"github.com/ru-rocker/gokit-playground/lorem-hytrix"
+	"github.com/afex/hystrix-go/hystrix"
 )
 
 //to execute: go run src/github.com/ru-rocker/gokit-playground/lorem-consul/discover.d/main.go -consul.addr localhost -consul.port 8500
@@ -39,7 +40,7 @@ func main() {
 	// Logging domain.
 	var logger log.Logger
 	{
-		logger = log.NewLogfmtLogger(os.Stderr)
+		logger = log.NewLogfmtLogger(os.Stdout)
 		logger = log.With(logger,"ts", log.DefaultTimestampUTC)
 		logger = log.With(logger,"caller", log.DefaultCaller)
 	}
@@ -73,6 +74,10 @@ func main() {
 	balancer := lb.NewRoundRobin(subscriber)
 	retry := lb.Retry(1, duration, balancer)
 	loremEndpoint = retry
+
+	// configure hystrix
+	hystrix.ConfigureCommand("Lorem Request", hystrix.CommandConfig{Timeout: 1000})
+	loremEndpoint = lorem_hystrix.Hystrix("Lorem Request", "Service currently unavailable", logger)(loremEndpoint)
 
 	// POST /sd-lorem
 	// Payload: {"requestType":"word", "min":10, "max":10}
@@ -123,11 +128,12 @@ func loremFactory(_ context.Context, method, path string) sd.Factory {
 	}
 }
 
-// decode request from discovery service
+// decode request from client (/sd-lorem)
 // parsing JSON into LoremRequest
 func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request lorem_hystrix.LoremRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		fmt.Println("err", err)
 		return nil, err
 	}
 	return request, nil
@@ -136,6 +142,8 @@ func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, 
 // Encode request form LoremRequest into existing Lorem Service
 // The encode will translate the LoremRequest into /lorem/{requestType}/{min}/{max}
 func encodeLoremRequest(_ context.Context, req *http.Request, request interface{}) error {
+	fmt.Println("encodeLoremRequest")
+
 	lr := request.(lorem_hystrix.LoremRequest)
 	p := "/" + lr.RequestType + "/" + strconv.Itoa(lr.Min) + "/" + strconv.Itoa(lr.Max)
 	req.URL.Path += p
@@ -144,6 +152,8 @@ func encodeLoremRequest(_ context.Context, req *http.Request, request interface{
 
 // decode response from Lorem Service
 func decodeLoremResponse(_ context.Context, resp *http.Response) (interface{}, error) {
+	fmt.Println("decodeLoremResponse")
+
 	var response lorem_hystrix.LoremResponse
 	var s map[string]interface{}
 
