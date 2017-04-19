@@ -23,8 +23,9 @@ import (
 	"encoding/json"
 	"strconv"
 	"errors"
-	"github.com/ru-rocker/gokit-playground/lorem-hytrix"
+	"github.com/ru-rocker/gokit-playground/lorem-hystrix"
 	"github.com/afex/hystrix-go/hystrix"
+	"net"
 )
 
 //to execute: go run src/github.com/ru-rocker/gokit-playground/lorem-consul/discover.d/main.go -consul.addr localhost -consul.port 8500
@@ -89,6 +90,14 @@ func main() {
 
 	// Interrupt handler.
 	errc := make(chan error)
+
+	// configure the hystrix stream handler
+	hystrixStreamHandler := hystrix.NewStreamHandler()
+	hystrixStreamHandler.Start()
+	go func() {
+		errc <- http.ListenAndServe(net.JoinHostPort("", "9000"), hystrixStreamHandler)
+	}()
+	
 	go func() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
@@ -133,7 +142,6 @@ func loremFactory(_ context.Context, method, path string) sd.Factory {
 func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request lorem_hystrix.LoremRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		fmt.Println("err", err)
 		return nil, err
 	}
 	return request, nil
@@ -142,7 +150,6 @@ func decodeConsulLoremRequest(_ context.Context, r *http.Request) (interface{}, 
 // Encode request form LoremRequest into existing Lorem Service
 // The encode will translate the LoremRequest into /lorem/{requestType}/{min}/{max}
 func encodeLoremRequest(_ context.Context, req *http.Request, request interface{}) error {
-	fmt.Println("encodeLoremRequest")
 
 	lr := request.(lorem_hystrix.LoremRequest)
 	p := "/" + lr.RequestType + "/" + strconv.Itoa(lr.Min) + "/" + strconv.Itoa(lr.Max)
@@ -152,7 +159,6 @@ func encodeLoremRequest(_ context.Context, req *http.Request, request interface{
 
 // decode response from Lorem Service
 func decodeLoremResponse(_ context.Context, resp *http.Response) (interface{}, error) {
-	fmt.Println("decodeLoremResponse")
 
 	var response lorem_hystrix.LoremResponse
 	var s map[string]interface{}

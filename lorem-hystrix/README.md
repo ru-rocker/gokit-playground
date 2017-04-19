@@ -44,11 +44,10 @@ Go main function for discover service
 
     docker run --rm -p 8400:8400 -p 8500:8500 -p 8600:53/udp -h node1 progrium/consul -server -bootstrap -ui-dir /ui
 
-### execute
+### Running hystrix dashboard
+The dashboard is running on http://localhost:8181/hystrix
 
-    cd $GOPATH/src/github.com/ru-rocker/gokit-playground
-    go run lorem-hystrix/lorem-consul.d/main.go -consul.addr localhost -consul.port 8500 -advertise.addr 192.168.1.103 -advertise.port 7002
-    go run lorem-hystrix/discover.d/main.go -consul.addr localhost -consul.port 8500
+    docker run -p 8181:9002 --name hystrix-dashboard mlabouardy/hystrix-dashboard:latest
 
 ### Running Prometheus and Grafana
 To execute type
@@ -56,3 +55,14 @@ To execute type
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
     docker-compose -f docker/docker-compose-prometheus-grafana-consul.yml up -d
     
+### execute
+
+    cd $GOPATH/src/github.com/ru-rocker/gokit-playground
+    go run lorem-hystrix/lorem-hystrix.d/main.go -consul.addr localhost -consul.port 8500 -advertise.addr 192.168.1.103 -advertise.port 7002
+    go run lorem-hystrix/discover.d/main.go -consul.addr localhost -consul.port 8500
+
+###### execute request in forever loop
+
+    while true; do curl -XPOST -d'{"requestType":"word", "min":10, "max":10}' http://localhost:8080/sd-lorem; sleep 1; done;
+    while true; do curl -XPOST -d'{"requestType":"sentence", "min":10, "max":10}' http://localhost:8080/sd-lorem; sleep 1; done;
+    while true; do curl -XPOST -d'{"requestType":"paragraph", "min":10, "max":10}' http://localhost:8080/sd-lorem; sleep 1; done;
