@@ -97,7 +97,7 @@ func main() {
 	go func() {
 		errc <- http.ListenAndServe(net.JoinHostPort("", "9000"), hystrixStreamHandler)
 	}()
-	
+
 	go func() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)

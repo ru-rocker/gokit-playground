@@ -14,6 +14,7 @@ I am fully using all three functions from the golorem library.
     go get github.com/juju/ratelimit
     go get github.com/prometheus/client_golang/prometheus
     go get github.com/go-kit/kit/sd/consul
+    go get github.com/afex/hystrix-go/hystrix
 
 ### service.go
 Business logic will be put here
