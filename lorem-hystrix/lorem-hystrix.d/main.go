@@ -60,7 +60,7 @@ func main() {
 	svc = lorem_hystrix.LoggingMiddleware(logger)(svc)
 	svc = lorem_hystrix.Metrics(requestCount, requestLatency)(svc)
 
-	rlbucket := ratelimit.NewBucket(1*time.Second, 100000)
+	rlbucket := ratelimit.NewBucket(35*time.Millisecond, 1000)
 	e := lorem_hystrix.MakeLoremLoggingEndpoint(svc)
 	e = ratelimitkit.NewTokenBucketThrottler(rlbucket, time.Sleep)(e)
 
