@@ -2,18 +2,20 @@ package auth
 
 import (
 	"github.com/go-kit/kit/endpoint"
-	kitjwt "github.com/go-kit/kit/auth/jwt"
 	"github.com/leonelquinteros/gorand"
 	"context"
 	"github.com/go-kit/kit/log"
 	"github.com/hashicorp/consul/api"
 	"strings"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/SermoDigital/jose/jws"
+	"github.com/SermoDigital/jose/jwt"
+	"github.com/SermoDigital/jose/crypto"
+	"time"
 )
 
 var (
 	key = []byte("ru-rocker")
-	method = jwt.SigningMethodHS256
+	method = crypto.SigningMethodHS256
 )
 
 func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoint.Middleware {
@@ -29,7 +31,7 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 			} else if strings.EqualFold("logout", req.Type) {
 				println("logout")
 				err = logoutHandler(consulAddress, consulPort,
-					req, resp, log)
+					req, &resp, log)
 			}
 
 			if err != nil {
@@ -42,22 +44,22 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 	}
 }
 //create jwt keyFunc to retrieve kid
-func keyFunc(token *jwt.Token) (interface{}, error) {
-	return key, nil
-}
+//func keyFunc(token *jwt.Token) (interface{}, error) {
+//	return key, nil
+//}
 // handling login
 func loginHandler(consulAddress string, consulPort string,
 	username string, resp *AuthResponse, log log.Logger) error {
 
 	var (
-		kid string
+		cid string
 		tokenString string
 	)
 
 	defer func(){
 		log.Log(
 			"username", username,
-			"kid", kid,
+			"jwtid", cid,
 			"token", tokenString,
 		)
 
@@ -67,101 +69,108 @@ func loginHandler(consulAddress string, consulPort string,
 	if err != nil {
 		panic(err.Error())
 	}
-	kid = uuid
+	cid = uuid
 
-	claims := kitjwt.Claims{
-		"user": username,
+	claims := jws.Claims{
+		"username": username,
 		"roles": resp.Roles,
 	}
 
-	token := jwt.NewWithClaims(method, jwt.MapClaims(claims))
-	token.Header["kid"] = uuid
+	claims.SetIssuer("ru-rocker.com")
+	claims.SetIssuedAt(time.Now())
+	claims.SetExpiration(time.Now().Add(time.Duration(5) * time.Second))
+	claims.SetJWTID(cid)
 
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err = token.SignedString(key)
+	j := jws.NewJWT(claims, method)
+
+	b, err := j.Serialize(key)
 	if err != nil {
 		return err
 	}
-
+	tokenString = string(b[:])
 	resp.TokenString = tokenString
-	log.Log(
-		"username", username,
-		"kid", uuid,
-		"token", tokenString,
-	)
 
+	errChan := make(chan error)
 	//register UUID on Consul KV
-	client := ConsulClient(consulAddress, consulPort, log)
-	kv := client.KV()
-	p := &api.KVPair{Key: uuid, Value: []byte("active")}
-	_, e := kv.Put(p, nil)
-	if e != nil {
-		return e
+	go func() {
+		client := ConsulClient(consulAddress, consulPort, log)
+		kv := client.KV()
+
+		key := "session/" + uuid
+		p := &api.KVPair{Key: key, Value: []byte(username)}
+		_, e := kv.Put(p, nil)
+		if e != nil {
+			errChan <- e
+		} else {
+			errChan <- nil
+		}
+	}()
+
+	if err = <- errChan; err != nil {
+		return err
 	}
 	return nil
 }
 
 // handling logout
 func logoutHandler(consulAddress string, consulPort string,
-	req AuthRequest, resp AuthResponse, log log.Logger) error {
+	req AuthRequest, resp *AuthResponse, log log.Logger) error {
 
 	var (
 		username string
-		kid string
+		cid string
 		tokenString string
 	)
 
 	defer func(){
 		log.Log(
 			"username", username,
-			"kid", kid,
+			"jwtid", cid,
 			"token", tokenString,
 		)
 
 	}()
 
+	leeway := 10 * time.Second
 	tokenString = req.TokenString
 	username = req.Username
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if token.Method != method {
-			return nil, kitjwt.ErrUnexpectedSigningMethod
-		}
-
-		return keyFunc(token)
-	})
+	w, err := jws.ParseJWT([]byte(tokenString))
 	if err != nil {
-		if e, ok := err.(*jwt.ValidationError); ok && e.Inner != nil {
-			if e.Errors&jwt.ValidationErrorMalformed != 0 {
-				// Token is malformed
-				return kitjwt.ErrTokenMalformed
-			} else if e.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
-				return kitjwt.ErrTokenExpired
-			} else if e.Errors&jwt.ValidationErrorNotValidYet != 0 {
-				// Token is not active yet
-				return kitjwt.ErrTokenNotActive
-			}
-
-			return e.Inner
-		}
-
 		return err
 	}
 
-	if !token.Valid {
-		return kitjwt.ErrTokenInvalid
+	claims := w.Claims()
+
+	if jwtid, ok := claims.JWTID(); ok {
+		cid = jwtid
 	}
 
-	kid = token.Header["kid"].(string)
+	err = claims.Validate(time.Now(), leeway, leeway);
 
-	//remove UUID on Consul KV
-	client := ConsulClient(consulAddress, consulPort, log)
-	kv := client.KV()
-	_, e := kv.Delete (kid, nil)
-	if e != nil {
-		return e
+	if err == nil || err == jwt.ErrTokenIsExpired {
+
+		errChan := make(chan error)
+		//remove UUID on Consul KV
+		go func(){
+			client := ConsulClient(consulAddress, consulPort, log)
+			kv := client.KV()
+			key := "session/" + cid
+			_, e := kv.Delete (key, nil)
+			resp.TokenString = ""
+			if err != nil {
+				errChan <- err
+			} else if e != nil {
+				errChan <- e
+			} else {
+				errChan <- nil
+			}
+		}()
+
+		if err = <- errChan; err != nil {
+			return err
+		} else if err == jwt.ErrTokenIsExpired{
+			return err
+		}
 	}
 
 	return nil
