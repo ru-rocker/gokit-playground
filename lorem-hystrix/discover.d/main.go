@@ -71,8 +71,9 @@ func main() {
 
 	factory := loremFactory(ctx, "POST", "/lorem")
 	serviceName := "lorem"
-	subscriber := consulsd.NewSubscriber(client, factory, logger, serviceName, tags, passingOnly)
-	balancer := lb.NewRoundRobin(subscriber)
+	instancer := consulsd.NewInstancer(client, logger, serviceName, tags, passingOnly)
+	endpointer := sd.NewEndpointer(instancer, factory, logger)
+	balancer := lb.NewRoundRobin(endpointer)
 	retry := lb.Retry(1, duration, balancer)
 	loremEndpoint = retry
 
