@@ -55,7 +55,6 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	println(err.Error())
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"error": err.Error(),
 	})
@@ -69,7 +68,7 @@ type errorer interface {
 }
 
 // decode auth request
-func decodeAuthRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeAuthRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 
 	vars := mux.Vars(r)
 	requestType, ok := vars["type"]

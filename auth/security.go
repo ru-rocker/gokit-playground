@@ -38,7 +38,6 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 				return nil, err
 			}
 
-
 			return resp, err
 		}
 	}
