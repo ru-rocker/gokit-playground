@@ -28,7 +28,7 @@ Logging function is under this file
     cd $GOPATH/src/github.com/ru-rocker/gokit-playground
     go run auth/auth.d/main.go -consul.addr localhost -consul.port 8500 -advertise.addr 192.168.1.103 -advertise.port 7002
 
-### Test if
+### Test it
 
     curl -X POST http://192.168.1.103:7002/auth/login -d'{"username":"admin","password":"password"}' -v
     

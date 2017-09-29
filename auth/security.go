@@ -25,6 +25,11 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 			req := request.(AuthRequest)
 			response, err = next(ctx, request)
+
+			if err != nil {
+				return nil, err
+			}
+
 			resp := response.(AuthResponse)
 			if strings.EqualFold("login", req.Type) {
 				err = loginHandler(consulAddress, consulPort,
@@ -33,10 +38,6 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 				println("logout")
 				err = logoutHandler(consulAddress, consulPort,
 					req, &resp, log)
-			}
-
-			if err != nil {
-				return nil, err
 			}
 
 			return resp, err

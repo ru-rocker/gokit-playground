@@ -24,7 +24,7 @@ type AuthService struct {
 // this will be needed in main.go
 type ServiceMiddleware func(Service) Service
 
-var InvalidLoginErr = errors.New("Username or Password does not equal")
+var InvalidLoginErr = errors.New("Username or Password does not match. Authentication failed.")
 
 func (AuthService) Login(username string, password string) (mesg string, roles []string, err error) {
 	if strings.EqualFold("admin", username) &&
