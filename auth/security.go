@@ -11,6 +11,7 @@ import (
 	"github.com/SermoDigital/jose/jwt"
 	"github.com/SermoDigital/jose/crypto"
 	"time"
+	"encoding/json"
 )
 
 var (
@@ -24,6 +25,11 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 			req := request.(AuthRequest)
 			response, err = next(ctx, request)
+
+			if err != nil {
+				return nil, err
+			}
+
 			resp := response.(AuthResponse)
 			if strings.EqualFold("login", req.Type) {
 				err = loginHandler(consulAddress, consulPort,
@@ -33,11 +39,6 @@ func JwtEndpoint(consulAddress string, consulPort string, log log.Logger) endpoi
 				err = logoutHandler(consulAddress, consulPort,
 					req, &resp, log)
 			}
-
-			if err != nil {
-				return nil, err
-			}
-
 
 			return resp, err
 		}
@@ -71,10 +72,13 @@ func loginHandler(consulAddress string, consulPort string,
 	}
 	cid = uuid
 
-	claims := jws.Claims{
+	claims := jws.Claims{}
+
+	m := map[string]interface{} {
 		"username": username,
 		"roles": resp.Roles,
 	}
+	val, _ := json.Marshal(m)
 
 	claims.SetIssuer("ru-rocker.com")
 	claims.SetIssuedAt(time.Now())
@@ -97,7 +101,7 @@ func loginHandler(consulAddress string, consulPort string,
 		kv := client.KV()
 
 		key := "session/" + uuid
-		p := &api.KVPair{Key: key, Value: []byte(username)}
+		p := &api.KVPair{Key: key, Value: []byte(val)}
 		_, e := kv.Put(p, nil)
 		if e != nil {
 			errChan <- e

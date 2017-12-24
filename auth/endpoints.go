@@ -5,6 +5,7 @@ import (
 	"context"
 	"strings"
 	"errors"
+	"github.com/kr/pretty"
 )
 
 var ErrRequestTypeNotFound = errors.New("Request type only valid for login and logout")
@@ -56,7 +57,7 @@ func MakeAuthEndpoint(svc Service) endpoint.Endpoint {
 		)
 
 		req := request.(AuthRequest)
-
+		pretty.Print("ctx")
 		if strings.EqualFold(req.Type, "login") {
 			mesg, roles, err = svc.Login(req.Username, req.Password)
 		} else if strings.EqualFold(req.Type, "logout") {
